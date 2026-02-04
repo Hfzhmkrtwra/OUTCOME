@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Data - BUMDES Outcome Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header dengan Logo BUMDES -->
+        <div class="header">
+            <div class="logo-header">
+                <div class="logo-wrapper">
+                    <div class="logo-circle">
+                        <img src="LOGO BUMDES.jpg" alt="Logo BUMDES Ciptamandiri Sejahtera" 
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'logo-placeholder\'><div>BUMDES</div><div style=\'font-size:14px;margin-top:5px;\'>CIPTA MANDIRI SEJAHTERA</div></div>';">
+                    </div>
+                </div>
+                <div class="logo-text">
+                    <h1>
+                        BUMDES<br>
+                        <span>CIPTAMANDIRI SEJAHTERA</span>
+                    </h1>
+                    <div class="subtitle">TAMBAH DATA OUTCOME</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Kembali ke Dashboard
+            </a>
+        </div>
+
+        <!-- Form Tambah Data -->
+        <div class="form-page">
+            <div class="form-container">
+                <div class="form-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Form Tambah Data Outcome
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="far fa-calendar"></i>
+                            Tanggal
+                        </label>
+                        <input type="date" id="dateInput" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="far fa-file-alt"></i>
+                            Deskripsi
+                        </label>
+                        <input type="text" id="descInput" class="form-input" placeholder="Contoh: Beli ATK" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-cube"></i>
+                            Jumlah (Pcs)
+                        </label>
+                        <input type="number" id="qtyInput" class="form-input" placeholder="0" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i>
+                            Harga (Rp)
+                        </label>
+                        <input type="number" id="priceInput" class="form-input" placeholder="0" min="1" required>
+                    </div>
+                </div>
+
+                <!-- Preview Perhitungan -->
+                <div class="preview-card" id="previewCard">
+                    <div class="preview-info">
+                        <div class="preview-label">Preview Perhitungan:</div>
+                        <div class="preview-text" id="previewText"></div>
+                    </div>
+                    <div class="preview-amount" id="previewAmount"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="window.location.href='index.html'">
+                        <i class="fas fa-times"></i>
+                        Batal
+                    </button>
+                    <button class="btn btn-success" id="addBtn">
+                        <i class="fas fa-save"></i>
+                        Simpan Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script type="module" src="main.js"></script>
+    <script type="module">
+        import { formatRupiah } from './main.js';
+        
+        // Setup untuk form tambah
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set tanggal hari ini
+            const today = new Date();
+            const dateInput = document.getElementById('dateInput');
+            if (dateInput) {
+                dateInput.value = today.toISOString().split('T')[0];
+            }
+            
+            // Event listener untuk preview
+            const descInput = document.getElementById('descInput');
+            const qtyInput = document.getElementById('qtyInput');
+            const priceInput = document.getElementById('priceInput');
+            
+            function updatePreview() {
+                const desc = descInput.value.trim();
+                const qty = parseInt(qtyInput.value) || 0;
+                const price = parseInt(priceInput.value) || 0;
+                
+                const previewCard = document.getElementById('previewCard');
+                const previewText = document.getElementById('previewText');
+                const previewAmount = document.getElementById('previewAmount');
+                
+                if (desc && qty > 0 && price > 0) {
+                    const amount = qty * price;
+                    previewText.textContent = `${desc} × ${qty} pcs`;
+                    previewAmount.textContent = formatRupiah(amount);
+                    previewCard.classList.add('active');
+                } else {
+                    previewCard.classList.remove('active');
+                }
+            }
+            
+            if (descInput && qtyInput && priceInput) {
+                descInput.addEventListener('input', updatePreview);
+                qtyInput.addEventListener('input', updatePreview);
+                priceInput.addEventListener('input', updatePreview);
+            }
+            
+            // Event listener untuk tombol tambah
+            const addBtn = document.getElementById('addBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', async () => {
+                    await window.appFunctions.addData();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

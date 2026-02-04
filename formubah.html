@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubah Data - BUMDES Outcome Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header dengan Logo BUMDES -->
+        <div class="header">
+            <div class="logo-header">
+                <div class="logo-wrapper">
+                    <div class="logo-circle">
+                        <img src="LOGO BUMDES.jpg" alt="Logo BUMDES Ciptamandiri Sejahtera" 
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'logo-placeholder\'><div>BUMDES</div><div style=\'font-size:14px;margin-top:5px;\'>CIPTA MANDIRI SEJAHTERA</div></div>';">
+                    </div>
+                </div>
+                <div class="logo-text">
+                    <h1>
+                        BUMDES<br>
+                        <span>CIPTAMANDIRI SEJAHTERA</span>
+                    </h1>
+                    <div class="subtitle">UBAH DATA OUTCOME</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Kembali ke Dashboard
+            </a>
+        </div>
+
+        <!-- Form Ubah Data -->
+        <div class="form-page">
+            <div class="form-container">
+                <div class="form-title">
+                    <i class="fas fa-edit"></i>
+                    Form Ubah Data Outcome
+                    <span id="dataId" style="font-size: 0.9rem; color: #6c757d; margin-left: auto;"></span>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="far fa-calendar"></i>
+                            Tanggal
+                        </label>
+                        <input type="date" id="dateInput" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="far fa-file-alt"></i>
+                            Deskripsi
+                        </label>
+                        <input type="text" id="descInput" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-cube"></i>
+                            Jumlah (Pcs)
+                        </label>
+                        <input type="number" id="qtyInput" class="form-input" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i>
+                            Harga (Rp)
+                        </label>
+                        <input type="number" id="priceInput" class="form-input" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="window.location.href='index.html'">
+                        <i class="fas fa-times"></i>
+                        Batal
+                    </button>
+                    <button class="btn btn-danger" id="deleteBtn">
+                        <i class="fas fa-trash"></i>
+                        Hapus Data
+                    </button>
+                    <button class="btn btn-success" id="updateBtn">
+                        <i class="fas fa-save"></i>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h2 style="margin: 0;">Konfirmasi Hapus</h2>
+            </div>
+            <div class="modal-body" id="modalMessage">
+                Apakah Anda yakin ingin menghapus data ini?
+            </div>
+            <div class="modal-footer">
+                <button id="cancelBtn" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button id="confirmDeleteBtn" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script type="module" src="main.js"></script>
+    <script type="module">
+        import { showNotification, loadOutcomeById, updateOutcome, deleteOutcome } from './main.js';
+        
+        let currentId = null;
+        
+        // Setup untuk form ubah
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Ambil ID dari URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            
+            if (!id) {
+                showNotification('ID data tidak ditemukan!', 'error');
+                setTimeout(() => window.location.href = 'index.html', 2000);
+                return;
+            }
+            
+            currentId = id;
+            
+            // Tampilkan ID
+            const dataIdElement = document.getElementById('dataId');
+            if (dataIdElement) {
+                dataIdElement.textContent = `ID: ${id.substring(0, 8)}...`;
+            }
+            
+            // Load data
+            const data = await loadOutcomeById(id);
+            if (data) {
+                document.getElementById('dateInput').value = data.tanggal || '';
+                document.getElementById('descInput').value = data.deskripsi || '';
+                document.getElementById('qtyInput').value = data.pax || '';
+                document.getElementById('priceInput').value = data.harga || '';
+            }
+            
+            // Event listener untuk tombol update
+            const updateBtn = document.getElementById('updateBtn');
+            if (updateBtn) {
+                updateBtn.addEventListener('click', async () => {
+                    if (!currentId) return;
+                    
+                    const dateInput = document.getElementById('dateInput');
+                    const descInput = document.getElementById('descInput');
+                    const qtyInput = document.getElementById('qtyInput');
+                    const priceInput = document.getElementById('priceInput');
+                    
+                    // Validasi
+                    if (!dateInput.value) {
+                        showNotification('Harap pilih tanggal!', 'error');
+                        dateInput.focus();
+                        return;
+                    }
+                    
+                    if (!descInput.value.trim()) {
+                        showNotification('Harap isi deskripsi!', 'error');
+                        descInput.focus();
+                        return;
+                    }
+                    
+                    const qty = parseInt(qtyInput.value);
+                    const price = parseInt(priceInput.value);
+                    
+                    if (!qty || qty <= 0) {
+                        showNotification('Jumlah harus lebih dari 0!', 'error');
+                        qtyInput.focus();
+                        return;
+                    }
+                    
+                    if (!price || price <= 0) {
+                        showNotification('Harga harus lebih dari 0!', 'error');
+                        priceInput.focus();
+                        return;
+                    }
+                    
+                    // Tampilkan loading
+                    const originalText = updateBtn.innerHTML;
+                    updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                    updateBtn.disabled = true;
+                    
+                    try {
+                        await updateOutcome(currentId, {
+                            tanggal: dateInput.value,
+                            deskripsi: descInput.value.trim(),
+                            pax: qty,
+                            harga: price
+                        });
+                        
+                        showNotification('Data berhasil diperbarui!', 'success');
+                        
+                        // Redirect setelah 1.5 detik
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                        
+                    } catch (error) {
+                        console.error('Error updating data:', error);
+                        showNotification('Gagal memperbarui data: ' + error.message, 'error');
+                    } finally {
+                        updateBtn.innerHTML = originalText;
+                        updateBtn.disabled = false;
+                    }
+                });
+            }
+            
+            // Event listener untuk tombol hapus
+            const deleteBtn = document.getElementById('deleteBtn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => {
+                    if (!currentId) return;
+                    
+                    const modal = document.getElementById('deleteModal');
+                    const descInput = document.getElementById('descInput');
+                    
+                    const modalMessage = document.getElementById('modalMessage');
+                    modalMessage.innerHTML = `
+                        <p>Anda akan menghapus data outcome:</p>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #e74c3c;">
+                            <strong style="color: #1a237e;">${descInput.value || 'Data'}</strong>
+                        </div>
+                        <p style="color: #6c757d; font-size: 0.9rem;">Tindakan ini tidak dapat dibatalkan. Yakin ingin menghapus?</p>
+                    `;
+                    
+                    modal.style.display = 'flex';
+                    
+                    // Setup event listeners
+                    document.getElementById('cancelBtn').onclick = () => {
+                        modal.style.display = 'none';
+                    };
+                    
+                    document.getElementById('confirmDeleteBtn').onclick = async () => {
+                        modal.style.display = 'none';
+                        
+                        try {
+                            await deleteOutcome(currentId);
+                            showNotification('Data berhasil dihapus!', 'success');
+                            
+                            // Redirect setelah 1.5 detik
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 1500);
+                            
+                        } catch (error) {
+                            console.error('Error deleting data:', error);
+                            showNotification('Gagal menghapus data: ' + error.message, 'error');
+                        }
+                    };
+                });
+            }
+            
+            // Enter key support
+            const inputElements = ['descInput', 'qtyInput', 'priceInput'];
+            inputElements.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            updateBtn.click();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
