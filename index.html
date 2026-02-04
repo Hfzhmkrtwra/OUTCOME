@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <!-- Header dengan Logo BUMDES -->
@@ -14,8 +16,7 @@
             <div class="logo-header">
                 <div class="logo-wrapper">
                     <div class="logo-circle">
-                        <img src="LOGO BUMDES.jpg" alt="Logo BUMDES Ciptamandiri Sejahtera" 
-                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'logo-placeholder\'><div>BUMDES</div><div style=\'font-size:14px;margin-top:5px;\'>CIPTA MANDIRI SEJAHTERA</div></div>';">
+                        <img src="LOGO BUMDES.jpg" alt="Logo BUMDES Ciptamandiri Sejahtera" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'logo-placeholder\'><div>BUMDES</div><div style=\'font-size:14px;margin-top:5px;\'>CIPTA MANDIRI SEJAHTERA</div></div>';">
                     </div>
                 </div>
                 <div class="logo-text">
@@ -34,7 +35,7 @@
                 <div class="total-amount" id="totalAmount">Rp 0</div>
             </div>
         </div>
-
+        
         <!-- Navigation -->
         <div class="navigation">
             <a href="formtambah.html" class="nav-button">
@@ -42,7 +43,7 @@
                 Tambah Data Baru
             </a>
         </div>
-
+        
         <!-- Tabel Data -->
         <div class="content">
             <div class="table-section">
@@ -85,7 +86,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Modal Konfirmasi Hapus -->
     <div id="deleteModal" class="modal-overlay">
         <div class="modal-content">
@@ -106,10 +107,24 @@
             </div>
         </div>
     </div>
-
+    
+    <!-- Navigation -->
+    <div class="navigation">
+        <a href="formtambah.html" class="nav-button">
+            <i class="fas fa-plus-circle"></i>
+            Tambah Data Baru
+        </a>
+        <!-- TAMBAHKAN TOMBOL PRINT INI -->
+        <button class="nav-button nav-button-print" onclick="printData()">
+            <i class="fas fa-print"></i>
+            Cetak Data
+        </button>
+    </div>
+    
     <!-- Notification Container -->
     <div id="notificationContainer"></div>
-
+    
     <script type="module" src="main.js"></script>
 </body>
+
 </html>

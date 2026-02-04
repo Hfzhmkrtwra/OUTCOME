@@ -402,3 +402,213 @@ if (window.location.pathname.includes('formtambah.html')) {
         }
     };
 }
+
+// ========== FUNGSI PRINT DATA ==========
+function printData() {
+    // Ambil data yang diperlukan
+    const table = document.querySelector('.data-table');
+    const totalAmount = document.getElementById('totalAmount')?.textContent || 'Rp 0';
+    const companyName = "BUMDES CIPTAMANDIRI SEJAHTERA";
+    const printDate = new Date().toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    if (!table) {
+        showNotification('Tidak ada data untuk dicetak', 'error');
+        return;
+    }
+    
+    // Cek apakah ada data
+    const rows = table.querySelectorAll('tbody tr');
+    if (rows.length === 0) {
+        showNotification('Tidak ada data untuk dicetak', 'error');
+        return;
+    }
+    
+    // Buat konten HTML untuk print
+    let printContent = `
+        <!DOCTYPE html>
+        <html lang="id">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Cetak Data Outcome - BUMDES</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                    font-family: 'Arial', sans-serif;
+                }
+                
+                body {
+                    padding: 20px;
+                    color: #333;
+                }
+                
+                .print-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 15px;
+                    border-bottom: 3px solid #1a237e;
+                }
+                
+                .company-name {
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #1a237e;
+                    margin-bottom: 5px;
+                }
+                
+                .document-title {
+                    font-size: 18px;
+                    color: #283593;
+                    margin-bottom: 10px;
+                }
+                
+                .print-info {
+                    font-size: 14px;
+                    color: #666;
+                }
+                
+                .print-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    font-size: 12px;
+                }
+                
+                .print-table th {
+                    background: #1a237e;
+                    color: white;
+                    padding: 10px;
+                    text-align: left;
+                    border: 1px solid #ddd;
+                }
+                
+                .print-table td {
+                    padding: 8px 10px;
+                    border: 1px solid #ddd;
+                }
+                
+                .print-table tr:nth-child(even) {
+                    background: #f8f9fa;
+                }
+                
+                .total-section {
+                    margin-top: 20px;
+                    text-align: right;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-top: 2px solid #1a237e;
+                }
+                
+                .total-label {
+                    font-size: 14px;
+                    color: #666;
+                }
+                
+                .total-amount {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #1a237e;
+                    font-family: 'Courier New', monospace;
+                }
+                
+                .footer {
+                    margin-top: 30px;
+                    text-align: center;
+                    font-size: 11px;
+                    color: #666;
+                    border-top: 1px solid #ddd;
+                    padding-top: 10px;
+                }
+                
+                @page {
+                    margin: 15mm;
+                }
+                
+                @media print {
+                    body {
+                        padding: 10px;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-header">
+                <div class="company-name">${companyName}</div>
+                <div class="document-title">LAPORAN DATA OUTCOME</div>
+                <div class="print-info">Dicetak pada: ${printDate}</div>
+            </div>
+            
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>TANGGAL</th>
+                        <th>DESKRIPSI</th>
+                        <th>QTY</th>
+                        <th>HARGA</th>
+                        <th>JUMLAH</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    // Tambahkan baris data
+    rows.forEach((row, index) => {
+        const cells = row.cells;
+        printContent += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${cells[1]?.textContent || ''}</td>
+                <td>${cells[2]?.textContent || ''}</td>
+                <td style="text-align: center;">${cells[3]?.textContent || ''}</td>
+                <td>${cells[4]?.textContent || ''}</td>
+                <td>${cells[5]?.textContent || ''}</td>
+            </tr>
+        `;
+    });
+    
+    // Tambahkan total dan footer
+    printContent += `
+                </tbody>
+            </table>
+            
+            <div class="total-section">
+                <div class="total-label">TOTAL OUTCOME</div>
+                <div class="total-amount">${totalAmount}</div>
+            </div>
+            
+            <div class="footer">
+                Laporan ini dicetak secara elektronik dari Sistem Manajemen Outcome BUMDES
+            </div>
+            
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 100);
+                };
+            </script>
+        </body>
+        </html>
+    `;
+    
+    // Buka jendela baru untuk print
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    showNotification('Mempersiapkan dokumen untuk dicetak...', 'warning');
+}
+
+// ========== TAMBAHKAN KE WINDOW OBJECT ==========
+window.printData = printData;

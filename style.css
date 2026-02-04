@@ -784,3 +784,129 @@ body {
         max-width: none;
     }
 }
+
+/* ========== STYLE TOMBOL PRINT ========== */
+.nav-button-print {
+    background: linear-gradient(90deg, #27ae60, #219653) !important;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: inherit;
+    margin-left: 10px;
+}
+
+.nav-button-print:hover {
+    background: linear-gradient(90deg, #219653, #1e8449) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3) !important;
+}
+
+/* ========== STYLE UNTUK PRINT ========== */
+@media print {
+    /* Sembunyikan elemen yang tidak perlu dicetak */
+    .navigation,
+    .action-buttons,
+    .nav-button,
+    .modal-overlay,
+    .notification,
+    #loadingState,
+    #emptyState,
+    #errorState {
+        display: none !important;
+    }
+    
+    /* Style untuk halaman print */
+    body {
+        background: white !important;
+        color: black !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: white !important;
+    }
+    
+    .header {
+        background: white !important;
+        color: black !important;
+        border-bottom: 2px solid #1a237e !important;
+        padding: 20px !important;
+        min-height: auto !important;
+    }
+    
+    .logo-text h1 {
+        color: black !important;
+        text-shadow: none !important;
+    }
+    
+    .logo-text h1 span {
+        color: #1a237e !important;
+    }
+    
+    .logo-text .subtitle {
+        color: #666 !important;
+    }
+    
+    .total-section {
+        background: white !important;
+        border: 1px solid #ddd !important;
+        color: black !important;
+    }
+    
+    .total-label {
+        color: #666 !important;
+    }
+    
+    .total-amount {
+        color: #1a237e !important;
+        text-shadow: none !important;
+    }
+    
+    .content {
+        padding: 10px !important;
+    }
+    
+    .table-section {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .data-table {
+        min-width: auto !important;
+        font-size: 11px !important;
+    }
+    
+    .data-table th {
+        background: #1a237e !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    .data-table td {
+        border-bottom: 1px solid #ddd !important;
+    }
+    
+    /* Pastikan tabel tidak terpotong saat print */
+    table {
+        page-break-inside: auto !important;
+    }
+    
+    tr {
+        page-break-inside: avoid !important;
+        page-break-after: auto !important;
+    }
+    
+    thead {
+        display: table-header-group !important;
+    }
+    
+    tfoot {
+        display: table-footer-group !important;
+    }
+}
